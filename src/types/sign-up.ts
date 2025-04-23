@@ -14,5 +14,5 @@ export interface SignUpTypes {
     confirmPassword: string;
   }) => void;
   showPassword?: boolean;
-  togglePasswordVisibility?: any;
+  togglePasswordVisibility?: () => void;
 }

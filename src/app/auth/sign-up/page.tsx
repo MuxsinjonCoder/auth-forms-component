@@ -11,11 +11,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useEffect, useState } from "react";
-import SignInSimpleForm from "@/components/page-components/sign-up/simple-form";
-import SignInImageForm from "@/components/page-components/sign-up/image-form";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import SignInImageFormRight from "@/components/page-components/sign-up/image-form-right";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -50,8 +47,7 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-export default function SignUpPage() {
-  // forms
+function SignUpFormContent() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,11 +58,9 @@ export default function SignUpPage() {
     },
   });
 
-  // states
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
-  // halpers
   const router = useRouter();
   const searchParams = useSearchParams();
   const [tabIndex, setTabIndex] = useState(0);
@@ -94,7 +88,6 @@ export default function SignUpPage() {
     document.title = `Sign-up - ${titles[tabIndexFromParam] || "simple form"}`;
   }, [searchParams]);
 
-  // functions
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log("Sign up form values: ", values);
     toast.success(`Your sign up form datas:
@@ -106,89 +99,95 @@ export default function SignUpPage() {
   };
 
   return (
-    <>
-      <Tabs
-        value={["simple", "image", "image-right"][tabIndex]}
-        className="w-[400px]"
-        onValueChange={handleTabChange}
-      >
-        <div className="fixed top-5 left-52 transform -translate-x-1/2 z-50">
-          <TabsList>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <TabsTrigger className="px-5" value="simple">
-                    <SquareSquare />
-                  </TabsTrigger>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Simple Sign up form</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <TabsTrigger className="px-5" value="image">
-                    <SquareSplitHorizontal />
-                  </TabsTrigger>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Sign up form with image</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <TabsTrigger className="px-5" value="image-right">
-                    <SquareSplitHorizontal />
-                  </TabsTrigger>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Sign up form with image right</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </TabsList>
-          <div className="flex items-center justify-center gap-2 mt-4">
-            <p className="text-xs font-semibold text-gray-600">
-              Select sign-up form type
-            </p>
-            <span className="text-xs text-gray-400">|</span>
-            <Link href="/">
-              <Button variant="link" className="text-xs text-blue-600">
-                Main page
-              </Button>
-            </Link>
-          </div>
+    <Tabs
+      value={["simple", "image", "image-right"][tabIndex]}
+      className="w-[400px]"
+      onValueChange={handleTabChange}
+    >
+      <div className="fixed top-5 left-52 transform -translate-x-1/2 z-50">
+        <TabsList>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <TabsTrigger className="px-5" value="simple">
+                  <SquareSquare />
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Simple Sign up form</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <TabsTrigger className="px-5" value="image">
+                  <SquareSplitHorizontal />
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Sign up form with image</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <TabsTrigger className="px-5" value="image-right">
+                  <SquareSplitHorizontal />
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Sign up form with image right</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </TabsList>
+        <div className="flex items-center justify-center gap-2 mt-4">
+          <p className="text-xs font-semibold text-gray-600">
+            Select sign-up form type
+          </p>
+          <span className="text-xs text-gray-400">|</span>
+          <Link href="/">
+            <Button variant="link" className="text-xs text-blue-600">
+              Main page
+            </Button>
+          </Link>
         </div>
+      </div>
 
-        <TabsContent value="simple">
-          <SignUpSimpleForm
-            form={form}
-            onSubmit={onSubmit}
-            showPassword={showPassword}
-            togglePasswordVisibility={togglePasswordVisibility}
-          />
-        </TabsContent>
-        <TabsContent value="image">
-          <SignUpImageForm
-            form={form}
-            onSubmit={onSubmit}
-            showPassword={showPassword}
-            togglePasswordVisibility={togglePasswordVisibility}
-          />
-        </TabsContent>
-        <TabsContent value="image-right">
-          <SignUpImageFormRight
-            form={form}
-            onSubmit={onSubmit}
-            showPassword={showPassword}
-            togglePasswordVisibility={togglePasswordVisibility}
-          />
-        </TabsContent>
-      </Tabs>
-    </>
+      <TabsContent value="simple">
+        <SignUpSimpleForm
+          form={form}
+          onSubmit={onSubmit}
+          showPassword={showPassword}
+          togglePasswordVisibility={togglePasswordVisibility}
+        />
+      </TabsContent>
+      <TabsContent value="image">
+        <SignUpImageForm
+          form={form}
+          onSubmit={onSubmit}
+          showPassword={showPassword}
+          togglePasswordVisibility={togglePasswordVisibility}
+        />
+      </TabsContent>
+      <TabsContent value="image-right">
+        <SignUpImageFormRight
+          form={form}
+          onSubmit={onSubmit}
+          showPassword={showPassword}
+          togglePasswordVisibility={togglePasswordVisibility}
+        />
+      </TabsContent>
+    </Tabs>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignUpFormContent />
+    </Suspense>
   );
 }

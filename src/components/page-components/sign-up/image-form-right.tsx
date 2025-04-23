@@ -8,7 +8,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { SignInTypes } from "@/types/sign-in";
 import { SignUpTypes } from "@/types/sign-up";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
